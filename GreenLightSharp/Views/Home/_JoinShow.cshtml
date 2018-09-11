@@ -1,0 +1,21 @@
+﻿@model GreenLightSharp.Models.Member
+
+
+@using (Html.BeginForm("Join","Home", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <h4>Band Id</h4>
+        <hr />
+        @Html.TextBoxFor(model => model.BandId)
+        <div class="form-group">
+            <div class="col-md-10">
+                <input type="submit" value="Join!" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
