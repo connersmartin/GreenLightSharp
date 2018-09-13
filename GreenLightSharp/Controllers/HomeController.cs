@@ -27,9 +27,12 @@ namespace GreenLightSharp.Controllers
         public ActionResult AddBand(Show model)
         {
             //Create band with a given name
+            //bandid is returned from
+            //GoogleRest(model,Method.POST,"show");
 
+            Member mem = new Member { BandId = model.Id };
             //Go to AddMember view with bandId showing
-            return View("AddMember", model.Id);
+            return View("AddMember", mem);
         }
 
         [HttpPost]
@@ -39,12 +42,6 @@ namespace GreenLightSharp.Controllers
             return View("AddMember", model);
         }
 
-        public ActionResult AddMember(string bandID)
-        {
-            //Add Member page
-            //Need to figure out how to do this with partial views keeping the same front page essentially
-            return View();
-        }
 
         public ActionResult AddMember(Member model)
         {
@@ -63,7 +60,10 @@ namespace GreenLightSharp.Controllers
 
             Member bandMember = new Member { Name = model.Name, Instrument = model.Instrument, Status = "0", BandId = model.BandId };
 
-            Show band = new Show();
+            Show band = new Show { Members = new List<Member>()};
+
+            //for data purposes, no need to do this for reals
+            band.Members.Add(bandMember);
 
             // /member?&name=***
             //API call to add a new member
