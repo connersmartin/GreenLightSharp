@@ -29,14 +29,14 @@ namespace GreenLightSharp.Controllers
             //Create band with a given name
 
             //Go to AddMember view with bandId showing
-            return View();
+            return View("AddMember", model.Id);
         }
 
         [HttpPost]
         public ActionResult Join(Member model)
         {
             //Goes to add a member page with given bandId
-            return View();
+            return View("AddMember", model);
         }
 
         public ActionResult AddMember(string bandID)
@@ -46,8 +46,15 @@ namespace GreenLightSharp.Controllers
             return View();
         }
 
-        [HttpPost]
         public ActionResult AddMember(Member model)
+        {
+            //Add Member page
+            //Need to figure out how to do this with partial views keeping the same front page essentially
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult PostMember(Member model)
         {
             //Add Member
             //TODO Figure this out for adding a member
@@ -56,6 +63,7 @@ namespace GreenLightSharp.Controllers
 
             Member bandMember = new Member { Name = model.Name, Instrument = model.Instrument, Status = "0", BandId = model.BandId };
 
+            Show band = new Show();
 
             // /member?&name=***
             //API call to add a new member
@@ -63,11 +71,12 @@ namespace GreenLightSharp.Controllers
 
             //SIDENOTE, can 1 totally put this in its own data acces layer somehow TODO Todo TODOOOO and 2 make a Request method
 
-            GoogleRest(bandMember, Method.POST, "Member");
+            //GoogleRest(bandMember, Method.POST, "Member");
+            //GoogleRest(band, Method.GET, "Show");
 
             //this restResponse.content may be the best way to link bands/members
             //Goes to show page
-            return View();
+            return View("ShowPage", band);
         }
 
         public ActionResult ShowPage(Show model)
