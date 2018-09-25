@@ -9,6 +9,6 @@ namespace GreenLightSharp.Models
     {
         public string Id { get; set; }
         public string Band { get; set; }
-        public List<Member> Members { get; set; }
+        public List<Member> Members { get; set; } = new List<Member>();
     }
 }

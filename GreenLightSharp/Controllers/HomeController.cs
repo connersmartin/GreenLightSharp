@@ -28,18 +28,16 @@ namespace GreenLightSharp.Controllers
         {
             //Create band with a given name
             //bandid is returned from
-            //GoogleRest(model,Method.POST,"show");
-
-            Member mem = new Member { BandId = model.Id };
+            Member mem = new Member { BandId = JsonConvert.DeserializeObject<Dictionary<string, string>>(GoogleRest(model, Method.POST)).Values.FirstOrDefault() };
             //Go to AddMember view with bandId showing
-            return View("AddMember", mem);
+            return RedirectToAction("AddMember", mem);
         }
 
         [HttpPost]
         public ActionResult Join(Member model)
         {
             //Goes to add a member page with given bandId
-            return View("AddMember", model);
+            return RedirectToAction("AddMember", model);
         }
 
 
@@ -47,7 +45,7 @@ namespace GreenLightSharp.Controllers
         {
             //Add Member page
             //Need to figure out how to do this with partial views keeping the same front page essentially
-            return View();
+            return View(model);
         }
 
         [HttpPost]
@@ -60,19 +58,15 @@ namespace GreenLightSharp.Controllers
 
             Member bandMember = new Member { Name = model.Name, Instrument = model.Instrument, Status = "0", BandId = model.BandId };
 
-            Show band = new Show { Members = new List<Member>()};
-
-            //for data purposes, no need to do this for reals
-            band.Members.Add(bandMember);
+            Show band = new Show { Members = new List<Member> { bandMember } };
 
             // /member?&name=***
             //API call to add a new member
             //Need to figure out way to link bands and members 'easily'
+            //DOESNT work yet
+            string memberID = JsonConvert.DeserializeObject<Dictionary<string,string>>(GoogleRest(bandMember, Method.POST, bandMember.BandId)).Values.FirstOrDefault();
 
-            //SIDENOTE, can 1 totally put this in its own data acces layer somehow TODO Todo TODOOOO and 2 make a Request method
-
-            //GoogleRest(bandMember, Method.POST, "Member");
-            //GoogleRest(band, Method.GET, "Show");
+            //We actually need to send the serialized band object to the view I think
 
             //this restResponse.content may be the best way to link bands/members
             //Goes to show page
@@ -85,7 +79,7 @@ namespace GreenLightSharp.Controllers
             return View();
         }
 
-        public string GoogleRest(object obj, Method method, string resource)
+        public string GoogleRest(object obj, Method method, string resource = null)
         {
             var client = new RestClient();
             client.BaseUrl = new Uri("");
