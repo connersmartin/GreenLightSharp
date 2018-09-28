@@ -29,6 +29,9 @@ namespace GreenLightSharp.Controllers
             //Create band with a given name
             //bandid is returned from
             Member mem = new Member { BandId = JsonConvert.DeserializeObject<Dictionary<string, string>>(GoogleRest(model, Method.POST)).Values.FirstOrDefault() };
+            model.Id = mem.BandId;
+            GoogleRest(model, Method.PATCH, mem.BandId );
+
             //Go to AddMember view with bandId showing
             return RedirectToAction("AddMember", mem);
         }
@@ -64,19 +67,30 @@ namespace GreenLightSharp.Controllers
             //API call to add a new member
             //Need to figure out way to link bands and members 'easily'
             //DOESNT work yet
-            string memberID = JsonConvert.DeserializeObject<Dictionary<string,string>>(GoogleRest(bandMember, Method.POST, bandMember.BandId)).Values.FirstOrDefault();
+
+            GoogleRest(bandMember, Method.POST, bandMember.BandId + "/Member");
 
             //We actually need to send the serialized band object to the view I think
+
+            band = JsonConvert.DeserializeObject<Show>(GoogleRest(null, Method.GET, bandMember.BandId));
+
+            Dictionary<string, Member> members =  JsonConvert.DeserializeObject<Dictionary<string,Member>>(GoogleRest(null, Method.GET, model.BandId + "/Member"));
+
+            foreach (Member m in members.Values)
+            {
+                band.Members.Add(m);
+            }
 
             //this restResponse.content may be the best way to link bands/members
             //Goes to show page
             return View("ShowPage", band);
         }
 
-        public ActionResult ShowPage(Show model)
+        public ActionResult ShowPage(Show band)
         {
             //Where everything is displayed and updated
-            return View();
+ 
+            return View(band);
         }
 
         public string GoogleRest(object obj, Method method, string resource = null)
