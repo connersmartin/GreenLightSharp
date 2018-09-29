@@ -1,20 +1,34 @@
-﻿@model GreenLightSharp.Models.Show
+﻿@model GreenLightSharp.Models.Display
 
 @{
     ViewBag.Title = "ShowPage";
-    string a = Model.Band;
-    string b = Model.Id;
+
     
 }
 
+@functions{
+    public static string statusColor(string status) { return status == "0" ? "/Content/red32.png" : "/Content/green32.png"; }
+}
+
 <h2>ShowPage</h2>
-
-<div class="row">
-    <div class="col-md-4">
-        @Html.Partial("_BandMember", Model.Members.FirstOrDefault())
-    </div>
-    <div class="col-md-4">
-        @Html.Partial("_BandStatus")
-    </div>
+<div>
+    <h4>Display</h4>
+    <hr />
+        
+    <b>@Model.Member.Name</b>
+    <b id="memStat"><img src=@statusColor(Model.Member.Status) />
+ 
 </div>
-
+<div>
+    <ul>
+        @foreach (var member in Model.Show.Members)
+        {
+            <li>
+                <b>@member.Name</b> - <b><img src=@statusColor(member.Status) height="10" width="10"/></b>
+            </li>
+        }
+    </ul>
+</div>
+<p>
+    @Html.ActionLink("Back to List", "Index")
+</p>

@@ -29,6 +29,8 @@ namespace GreenLightSharp.Controllers
             //Create band with a given name
             //bandid is returned from
             Member mem = new Member { BandId = JsonConvert.DeserializeObject<Dictionary<string, string>>(GoogleRest(model, Method.POST)).Values.FirstOrDefault() };
+
+            //updates the band with its firebase id
             model.Id = mem.BandId;
             GoogleRest(model, Method.PATCH, mem.BandId );
 
@@ -55,38 +57,28 @@ namespace GreenLightSharp.Controllers
         public ActionResult PostMember(Member model)
         {
             //Add Member
-            //TODO Figure this out for adding a member
             //Will need to know bandId for proper linkage can this be saved with a token?
             //may need to implement a secondary table if these are 'universal/session' members, but that's definitely secondary
 
             Member bandMember = new Member { Name = model.Name, Instrument = model.Instrument, Status = "0", BandId = model.BandId };
 
-            Show band = new Show { Members = new List<Member> { bandMember } };
-
+            
             // /member?&name=***
             //API call to add a new member
-            //Need to figure out way to link bands and members 'easily'
-            //DOESNT work yet
 
             GoogleRest(bandMember, Method.POST, bandMember.BandId + "/Member");
 
-            //We actually need to send the serialized band object to the view I think
+            //get the band
+            Display display = GetAndReturnBand(model.BandId);
 
-            band = JsonConvert.DeserializeObject<Show>(GoogleRest(null, Method.GET, bandMember.BandId));
+            //Add your person
+            display.Member = bandMember;
 
-            Dictionary<string, Member> members =  JsonConvert.DeserializeObject<Dictionary<string,Member>>(GoogleRest(null, Method.GET, model.BandId + "/Member"));
-
-            foreach (Member m in members.Values)
-            {
-                band.Members.Add(m);
-            }
-
-            //this restResponse.content may be the best way to link bands/members
             //Goes to show page
-            return View("ShowPage", band);
+            return View("ShowPage", display);
         }
 
-        public ActionResult ShowPage(Show band)
+        public ActionResult ShowPage(Display band)
         {
             //Where everything is displayed and updated
  
@@ -95,6 +87,7 @@ namespace GreenLightSharp.Controllers
 
         public string GoogleRest(object obj, Method method, string resource = null)
         {
+            //Generic API call for firebase db
             var client = new RestClient();
             client.BaseUrl = new Uri("");
             var json = JsonConvert.SerializeObject(obj);
@@ -105,6 +98,25 @@ namespace GreenLightSharp.Controllers
             IRestResponse restResponse = client.Execute(request);
 
             return restResponse.Content;
+        }
+
+        public Display GetAndReturnBand(string bandId)
+        {
+            Display showtime = new Display {
+                //Gets the band
+                Show = JsonConvert.DeserializeObject<Show>(GoogleRest(null, Method.GET, bandId))
+            };
+
+            //Gets the Members
+            Dictionary<string, Member> members = JsonConvert.DeserializeObject<Dictionary<string, Member>>(GoogleRest(null, Method.GET, bandId + "/Member"));
+
+            //adds them
+            foreach (Member m in members.Values)
+            {
+                showtime.Show.Members.Add(m);
+            }
+
+            return showtime;
         }
     }
 }

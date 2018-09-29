@@ -149,6 +149,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\Display.cs" />
     <Compile Include="Models\Member.cs" />
     <Compile Include="Models\Show.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -156,6 +157,8 @@
   <ItemGroup>
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\green32.png" />
+    <Content Include="Content\red32.png" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
@@ -193,8 +196,6 @@
     <Content Include="Views\Home\_JoinShow.cshtml" />
     <Content Include="Views\Home\AddMember.cshtml" />
     <Content Include="Views\Home\ShowPage.cshtml" />
-    <Content Include="Views\Home\_BandMember.cshtml" />
-    <Content Include="Views\Home\_BandStatus.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
