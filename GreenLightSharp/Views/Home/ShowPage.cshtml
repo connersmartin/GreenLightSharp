@@ -2,8 +2,7 @@
 
 @{
     ViewBag.Title = "ShowPage";
-
-    
+    string modelJSON = Model.Member.Id;
 }
 
 @functions{
@@ -14,17 +13,17 @@
 <div>
     <h4>Display</h4>
     <hr />
-        
+
     <b>@Model.Member.Name</b>
-    <b id="memStat"><img src=@statusColor(Model.Member.Status) />
- 
+    <div id="memStat"><img src=@statusColor(Model.Member.Status)></div>
+
 </div>
 <div>
     <ul>
         @foreach (var member in Model.Show.Members)
         {
             <li>
-                <b>@member.Name</b> - <b><img src=@statusColor(member.Status) height="10" width="10"/></b>
+                <b>@member.Name</b> - <b><img src=@statusColor(member.Status) height="10" width="10" /></b>
             </li>
         }
     </ul>
@@ -32,3 +31,22 @@
 <p>
     @Html.ActionLink("Back to List", "Index")
 </p>
+
+@section Scripts {
+
+    <script type="text/javascript">
+        $("#memStat").click(function () {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("PatchMember", "Home")',
+                data: "{ 'id': '@Model.Member.Id', 'bid': '@Model.Show.Id'}" ,
+                contentType: "application/json; charset=utf-8",
+                dataType: "html",
+                success: function () {
+                    location.reload();
+                }
+            });
+        });
+    </script>
+    
+}

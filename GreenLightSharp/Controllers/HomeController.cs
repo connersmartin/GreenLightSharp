@@ -60,29 +60,58 @@ namespace GreenLightSharp.Controllers
             //Will need to know bandId for proper linkage can this be saved with a token?
             //may need to implement a secondary table if these are 'universal/session' members, but that's definitely secondary
 
-            Member bandMember = new Member { Name = model.Name, Instrument = model.Instrument, Status = "0", BandId = model.BandId };
+            Member bandMember = new Member {
+                Id =null,
+                Name = model.Name,
+                Instrument = model.Instrument,
+                Status = "0",
+                BandId = model.BandId
+            };
 
             
             // /member?&name=***
-            //API call to add a new member
+            //API call to add a new member and give them an id
 
-            GoogleRest(bandMember, Method.POST, bandMember.BandId + "/Member");
-
-            //get the band
-            Display display = GetAndReturnBand(model.BandId);
-
-            //Add your person
-            display.Member = bandMember;
+            bandMember.Id = JsonConvert.DeserializeObject<Dictionary<string, string>>(CreateMember(bandMember)).FirstOrDefault().Value;
+            //update to give bandmember own id
+            UpdateMember(bandMember);
 
             //Goes to show page
-            return View("ShowPage", display);
+            return RedirectToAction("ShowPage", new { id = bandMember.Id, bid = bandMember.BandId });
         }
 
-        public ActionResult ShowPage(Display band)
+        [HttpGet]
+        public ActionResult ShowPage(string id, string bid)
         {
             //Where everything is displayed and updated
- 
+
+            //get the band
+            Display band = GetAndReturnBand(bid);
+            band.Member = JsonConvert.DeserializeObject<Member>(GoogleRest(null, Method.GET, bid + "/Member/" + id));
             return View(band);
+        }
+
+        [HttpPost]
+        public ActionResult PatchMember(string id, string bid)
+        {
+
+            Display band = GetAndReturnBand(bid);
+
+            band.Member = JsonConvert.DeserializeObject<Member>(GoogleRest(null, Method.GET, bid + "/Member/" + id));
+
+            if (band.Member.Status == "0")
+            {
+                band.Member.Status = "1";
+            }
+            else
+            {
+                band.Member.Status = "0";
+            }
+
+            band.Member = JsonConvert.DeserializeObject<Member>(UpdateMember(band.Member));
+
+            return RedirectToAction("ShowPage", new { id = band.Member.Id, bid = band.Member.BandId });
+
         }
 
         public string GoogleRest(object obj, Method method, string resource = null)
@@ -98,6 +127,16 @@ namespace GreenLightSharp.Controllers
             IRestResponse restResponse = client.Execute(request);
 
             return restResponse.Content;
+        }
+
+        public string UpdateMember(Member member)
+        {
+            return GoogleRest(member, Method.PATCH, member.BandId + "/Member/" + member.Id);
+        }
+
+        public string CreateMember(Member member)
+        {
+            return GoogleRest(member, Method.POST, member.BandId + "/Member");
         }
 
         public Display GetAndReturnBand(string bandId)
