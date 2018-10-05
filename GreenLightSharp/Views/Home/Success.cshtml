@@ -1,0 +1,10 @@
+﻿@model GreenLightSharp.Models.Display
+@{
+    ViewBag.Title = "Success";
+}
+
+<h2>Success</h2>
+
+<p>
+    @Html.ActionLink("Back to Show", "ShowPage", new { id = Model.Member.Id, bid = Model.Member.BandId })
+</p>

@@ -86,8 +86,22 @@ namespace GreenLightSharp.Controllers
             //Where everything is displayed and updated
 
             //get the band
-            Display band = GetAndReturnBand(bid);
+            Display band = GetAndReturnBand(bid);            
             band.Member = JsonConvert.DeserializeObject<Member>(GoogleRest(null, Method.GET, bid + "/Member/" + id));
+
+
+            //Need to figure out this logic
+            /*if (IsReady(band.Show))
+            {
+                Clear(band.Show);
+
+                return View("Success", band);
+            }
+            else
+            {
+                return View(band);
+            }*/
+
             return View(band);
         }
 
@@ -137,6 +151,27 @@ namespace GreenLightSharp.Controllers
         public string CreateMember(Member member)
         {
             return GoogleRest(member, Method.POST, member.BandId + "/Member");
+        }
+
+        public bool IsReady(Show band)
+        {
+            foreach (Member mem in band.Members)
+            {
+                if (mem.Status == "0")
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public void Clear(Show band)
+        {
+            foreach (Member mem in band.Members)
+            {
+                mem.Status = "0";
+                UpdateMember(mem);
+            }
         }
 
         public Display GetAndReturnBand(string bandId)

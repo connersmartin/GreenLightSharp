@@ -196,6 +196,7 @@
     <Content Include="Views\Home\_JoinShow.cshtml" />
     <Content Include="Views\Home\AddMember.cshtml" />
     <Content Include="Views\Home\ShowPage.cshtml" />
+    <Content Include="Views\Home\Success.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
