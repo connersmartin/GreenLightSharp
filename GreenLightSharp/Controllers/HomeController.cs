@@ -91,18 +91,16 @@ namespace GreenLightSharp.Controllers
 
 
             //Need to figure out this logic
-            /*if (IsReady(band.Show))
+            if (IsReady(band.Show))
             {
-                Clear(band.Show);
-
                 return View("Success", band);
             }
             else
             {
                 return View(band);
-            }*/
+            }
 
-            return View(band);
+            //return View(band);
         }
 
         [HttpPost]
@@ -157,7 +155,7 @@ namespace GreenLightSharp.Controllers
         {
             foreach (Member mem in band.Members)
             {
-                if (mem.Status == "0")
+                if (mem.Status == "0" && band.Members.Count > 1)
                 {
                     return false;
                 }
@@ -165,9 +163,10 @@ namespace GreenLightSharp.Controllers
             return true;
         }
 
-        public void Clear(Show band)
+        public void Clear(string bid)
         {
-            foreach (Member mem in band.Members)
+            Display show = GetAndReturnBand(bid);
+            foreach (Member mem in show.Show.Members)
             {
                 mem.Status = "0";
                 UpdateMember(mem);

@@ -5,6 +5,21 @@
 
 <h2>Success</h2>
 
-<p>
-    @Html.ActionLink("Back to Show", "ShowPage", new { id = Model.Member.Id, bid = Model.Member.BandId })
+<p id="memStat">
+    @Html.ActionLink("Click to reset status", "ShowPage", new { id = Model.Member.Id, bid = Model.Member.BandId })
 </p>
+
+@section Scripts {
+
+    <script type="text/javascript">
+        $("#memStat").click(function() {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("Clear", "Home")',
+                data: "{ 'bid': '@Model.Show.Id'}",
+                contentType: "application/json; charset=utf-8",
+                dataType: "html"
+            });
+        });
+    </script>
+}
