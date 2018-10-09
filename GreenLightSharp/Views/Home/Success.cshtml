@@ -3,10 +3,13 @@
     ViewBag.Title = "Success";
 }
 
-<h2>Success</h2>
+<h2>Success!!</h2>
 
-<p id="memStat">
-    @Html.ActionLink("Click to reset status", "ShowPage", new { id = Model.Member.Id, bid = Model.Member.BandId })
+<img id="memStat" src="/Content/green32.png" />
+
+<h4>Click square to reset status</h4>
+<p>
+    @Html.ActionLink("Return to Show", "ShowPage", new { id = Model.Member.Id, bid = Model.Member.BandId })
 </p>
 
 @section Scripts {
@@ -20,6 +23,7 @@
                 contentType: "application/json; charset=utf-8",
                 dataType: "html"
             });
+            $("#memStat").attr("src", "/Content/red32.png");
         });
     </script>
 }

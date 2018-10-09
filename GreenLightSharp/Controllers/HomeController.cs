@@ -155,7 +155,7 @@ namespace GreenLightSharp.Controllers
         {
             foreach (Member mem in band.Members)
             {
-                if (mem.Status == "0" && band.Members.Count > 1)
+                if (mem.Status == "0" || band.Members.Count == 1)
                 {
                     return false;
                 }
