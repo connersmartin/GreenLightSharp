@@ -1,19 +1,25 @@
 ﻿@model GreenLightSharp.Models.Member
 
+@{
 
-@using (Html.BeginForm("Join","Home", FormMethod.Post))
+}
+
+@using (Html.BeginForm("Join", "Home", FormMethod.Post))
 {
     @Html.AntiForgeryToken()
     <h4>If you have a band id, enter it here</h4>
+    @Html.ValidationSummary(false, "", new { @class = "text-danger" })
     <div class="form-horizontal">
         <h4>Band Id</h4>
-        <hr />
         @Html.TextBoxFor(model => model.BandId)
+        @Html.ValidationMessageFor(model => model.BandId, "", new { @class = "text-danger" })
+        <br />
         <div class="form-group">
             <div class="col-md-10">
                 <input type="submit" value="Join!" class="btn btn-default" />
             </div>
         </div>
+        <b style="color: firebrick">@ViewBag.Message</b>
     </div>
 }
 @section Scripts {

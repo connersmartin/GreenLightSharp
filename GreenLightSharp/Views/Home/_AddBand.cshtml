@@ -1,13 +1,18 @@
 ﻿@model GreenLightSharp.Models.Show
 
-@using (Html.BeginForm("AddBand","Home", FormMethod.Post)) 
+@using (Html.BeginForm("AddBand", "Home", FormMethod.Post))
 {
     @Html.AntiForgeryToken()
     <H4>If you are creating the show start here</H4>
+    @Html.ValidationSummary(false, "", new { @class = "text-danger" })
     <div class="form-horizontal">
         <h4>Create A Show</h4>
-        <hr />
-        @Html.TextBoxFor(model=> model.Band)
+        @Html.TextBoxFor(model => model.Band)
+        @Html.ValidationMessageFor(model => model.Band, "", new { @class = "text-danger" })
+        <br />
+        <h5>Number of members</h5>
+        @Html.TextBoxFor(model => model.Size)
+        @Html.ValidationMessageFor(model => model.Size, "", new { @class = "text-danger" })
         <div class="form-group">
             <div class="col-md-10">
                 <input type="submit" value="Create" class="btn btn-default" />

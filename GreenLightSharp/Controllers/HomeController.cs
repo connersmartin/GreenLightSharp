@@ -12,8 +12,17 @@ namespace GreenLightSharp.Controllers
 {
     public class HomeController : Controller
     {
-        public ActionResult Index()
+        public ActionResult Index(string error = null)
         {
+            if (error == "doesnotexist")
+            {
+                ViewBag.Message = "Band Id does not exist, please try again";
+            }
+            else if (error == "pleaseenterbandname")
+            {
+                ViewBag.Title = "Please enter a band name and a number > 1";
+            }
+
             return View();
         }
 
@@ -26,23 +35,39 @@ namespace GreenLightSharp.Controllers
         [HttpPost]
         public ActionResult AddBand(Show model)
         {
-            //Create band with a given name
-            //bandid is returned from
-            Member mem = new Member { BandId = JsonConvert.DeserializeObject<Dictionary<string, string>>(GoogleRest(model, Method.POST)).Values.FirstOrDefault() };
+            if (ModelState.IsValid)
+            {
+                //Create band with a given name
+                //bandid is returned from
+                Member mem = new Member { BandId = JsonConvert.DeserializeObject<Dictionary<string, string>>(GoogleRest(model, Method.POST)).Values.FirstOrDefault() };
 
-            //updates the band with its firebase id
-            model.Id = mem.BandId;
-            GoogleRest(model, Method.PATCH, mem.BandId );
+                //updates the band with its firebase id
+                model.Id = mem.BandId;
+                GoogleRest(model, Method.PATCH, mem.BandId );
 
-            //Go to AddMember view with bandId showing
-            return RedirectToAction("AddMember", mem);
+                //Go to AddMember view with bandId showing
+                return RedirectToAction("AddMember", mem);
+            }
+            return RedirectToAction("index", new { error = "pleaseenterbandname" });
         }
 
         [HttpPost]
         public ActionResult Join(Member model)
         {
+            //basic validation
+            try
+            {
+                GetAndReturnBand(model.BandId);
+
+                return RedirectToAction("AddMember", model);
+            }
+            catch (Exception)
+            {
+                return RedirectToAction("Index", new { error = "doesnotexist" });
+            }
+            
             //Goes to add a member page with given bandId
-            return RedirectToAction("AddMember", model);
+            
         }
 
 
@@ -91,7 +116,7 @@ namespace GreenLightSharp.Controllers
 
 
             //Need to figure out this logic
-            if (IsReady(band.Show))
+            if (IsReady(band.Show) && band.Show.Size == band.Show.Members.Count)
             {
                 return View("Success", band);
             }
@@ -183,11 +208,12 @@ namespace GreenLightSharp.Controllers
             //Gets the Members
             Dictionary<string, Member> members = JsonConvert.DeserializeObject<Dictionary<string, Member>>(GoogleRest(null, Method.GET, bandId + "/Member"));
 
-            //adds them
-            foreach (Member m in members.Values)
-            {
-                showtime.Show.Members.Add(m);
-            }
+                //adds them if there are any
+                foreach (Member m in members.Values)
+                {
+                    showtime.Show.Members.Add(m);
+                }
+
 
             return showtime;
         }
