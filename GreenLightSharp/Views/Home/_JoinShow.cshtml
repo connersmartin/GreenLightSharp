@@ -1,9 +1,5 @@
 ﻿@model GreenLightSharp.Models.Member
 
-@{
-
-}
-
 @using (Html.BeginForm("Join", "Home", FormMethod.Post))
 {
     @Html.AntiForgeryToken()
@@ -19,7 +15,6 @@
                 <input type="submit" value="Join!" class="btn btn-default" />
             </div>
         </div>
-        <b style="color: firebrick">@ViewBag.Message</b>
     </div>
 }
 @section Scripts {

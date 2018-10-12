@@ -20,7 +20,7 @@ namespace GreenLightSharp.Controllers
             }
             else if (error == "pleaseenterbandname")
             {
-                ViewBag.Title = "Please enter a band name and a number > 1";
+                ViewBag.Message = "Please enter a band name and a number > 1";
             }
 
             return View();
@@ -35,6 +35,7 @@ namespace GreenLightSharp.Controllers
         [HttpPost]
         public ActionResult AddBand(Show model)
         {
+            model.ShowStatus = "0";
             if (ModelState.IsValid)
             {
                 //Create band with a given name
@@ -114,16 +115,14 @@ namespace GreenLightSharp.Controllers
             Display band = GetAndReturnBand(bid);            
             band.Member = JsonConvert.DeserializeObject<Member>(GoogleRest(null, Method.GET, bid + "/Member/" + id));
 
-
-            //Need to figure out this logic
             if (IsReady(band.Show) && band.Show.Size == band.Show.Members.Count)
             {
-                return View("Success", band);
+                band.Show.ShowStatus = "1";
+                UpdateShow(band.Show);
             }
-            else
-            {
-                return View(band);
-            }
+
+            return View(band);
+            
 
             //return View(band);
         }
@@ -165,6 +164,11 @@ namespace GreenLightSharp.Controllers
 
             return restResponse.Content;
         }
+        //doesn't work, TODO Figure this out
+        public string UpdateShow(Show band)
+        {
+            return GoogleRest(band, Method.PATCH, band.Id);
+        }
 
         public string UpdateMember(Member member)
         {
@@ -196,6 +200,9 @@ namespace GreenLightSharp.Controllers
                 mem.Status = "0";
                 UpdateMember(mem);
             }
+
+            show.Show.ShowStatus = "0";
+            UpdateShow(show.Show);
         }
 
         public Display GetAndReturnBand(string bandId)

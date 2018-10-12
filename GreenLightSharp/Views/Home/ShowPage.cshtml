@@ -10,15 +10,14 @@
 }
 
 <h2>ShowPage</h2>
-<div>
-    <h4>Display</h4>
-    <hr />
-
+<h4>Display</h4>
+<hr />
+<div class="col-md-4">
     <b>@Model.Member.Name</b>
     <div id="memStat"><img src=@statusColor(Model.Member.Status)></div>
 
 </div>
-<div>
+<div class="col-md-4">
     <ul>
         @foreach (var member in Model.Show.Members)
         {
@@ -28,6 +27,13 @@
         }
     </ul>
 </div>
+@if (Model.Show.ShowStatus == "1")
+{
+    <div class="col-md-4">
+        @Html.Partial("Success")
+    </div>
+}
+
 
 @section Scripts {
 
@@ -48,6 +54,18 @@
         setTimeout(function () {
             location.reload();
         }, 5000);
+    </script>
+    <script type="text/javascript">
+        $("#reset").click(function() {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("Clear", "Home")',
+                data: "{ 'bid': '@Model.Show.Id'}",
+                contentType: "application/json; charset=utf-8",
+                dataType: "html"
+            });
+            $("#reset").attr("src", "/Content/red32.png");
+        });
     </script>
     
 }
