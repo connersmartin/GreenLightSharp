@@ -38,6 +38,7 @@
 @section Scripts {
 
     <script type="text/javascript">
+        
         $("#memStat").click(function () {
             $.ajax({
                 type: "POST",
@@ -52,10 +53,17 @@
         });
         //refresh
         setTimeout(function () {
-            location.reload();
+            //var Url = '/Home/ShowPage/@Model.Member.Id?bid=@Model.Show.Id';
+            //var showUrl = encodeURI(Url);
+            //$.ajax({
+            //    type: "GET",
+            //    url: showUrl,
+            //    contentType: "application/json; charset=utf-8",
+            //    dataType: "html",
+            //    success: function (data) { }
+                location.reload();
+            //});
         }, 5000);
-    </script>
-    <script type="text/javascript">
         $("#reset").click(function() {
             $.ajax({
                 type: "POST",
