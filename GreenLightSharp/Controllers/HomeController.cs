@@ -109,8 +109,8 @@ namespace GreenLightSharp.Controllers
             //get the band
             Display band = GetAndReturnBand(bid);            
             band.Member = JsonConvert.DeserializeObject<Member>(GoogleRest(null, Method.GET, bid + "/Member/" + id));
-
-            if (IsReady(band.Show) && band.Show.Size == band.Show.Members.Count)
+            //Want to make sure there are at least the number of members you wanted ready before success
+            if (IsReady(band.Show) && band.Show.Size >= band.Show.Members.Count)
             {
                 band.Show.ShowStatus = "1";
                 UpdateShowStatus(band.Show);
@@ -201,7 +201,7 @@ namespace GreenLightSharp.Controllers
         {
             //Generic API call for firebase db
             var client = new RestClient();
-            client.BaseUrl = new Uri("https://greenlight-f0594.firebaseio.com/");
+            client.BaseUrl = new Uri("");
             var json = JsonConvert.SerializeObject(obj);
             var request = new RestRequest(method);
             request.AddParameter("application/json; charset=utf-8", json, ParameterType.RequestBody);

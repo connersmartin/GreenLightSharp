@@ -38,7 +38,19 @@
 @section Scripts {
 
     <script type="text/javascript">
-        
+        var change = firebase.database().ref('@Model.Show.Id/');
+        var Url = '/Home/ShowPage/@Model.Member.Id?bid=@Model.Show.Id';
+        var showUrl = encodeURI(Url);
+        change.on('child_changed', function () {
+            $.ajax({
+                type: "GET",
+                url: showUrl,
+                contentType: "application/json; charset=utf-8",
+                dataType: "html",
+                success: function () { 
+                location.reload();}
+            });
+        });
         $("#memStat").click(function () {
             $.ajax({
                 type: "POST",
@@ -51,19 +63,6 @@
                 }
             });
         });
-        //refresh
-        setTimeout(function () {
-            //var Url = '/Home/ShowPage/@Model.Member.Id?bid=@Model.Show.Id';
-            //var showUrl = encodeURI(Url);
-            //$.ajax({
-            //    type: "GET",
-            //    url: showUrl,
-            //    contentType: "application/json; charset=utf-8",
-            //    dataType: "html",
-            //    success: function (data) { }
-                location.reload();
-            //});
-        }, 5000);
         $("#reset").click(function() {
             $.ajax({
                 type: "POST",
