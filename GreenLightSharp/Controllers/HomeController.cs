@@ -65,12 +65,9 @@ namespace GreenLightSharp.Controllers
             catch (Exception)
             {
                 return RedirectToAction("Index", new { error = "doesnotexist" });
-            }
-            
-            //Goes to add a member page with given bandId
-            
+            }   
+            //Goes to add a member page with given bandId      
         }
-
 
         public ActionResult AddMember(Member model)
         {
@@ -94,8 +91,6 @@ namespace GreenLightSharp.Controllers
                 BandId = model.BandId
             };
 
-            
-            // /member?&name=***
             //API call to add a new member and give them an id
 
             bandMember.Id = JsonConvert.DeserializeObject<Dictionary<string, string>>(CreateMember(bandMember)).FirstOrDefault().Value;
@@ -118,21 +113,16 @@ namespace GreenLightSharp.Controllers
             if (IsReady(band.Show) && band.Show.Size == band.Show.Members.Count)
             {
                 band.Show.ShowStatus = "1";
-                UpdateShow(band.Show);
+                UpdateShowStatus(band.Show);
             }
 
             return View(band);
-            
-
-            //return View(band);
         }
 
         [HttpPost]
         public ActionResult PatchMember(string id, string bid)
         {
-
             Display band = GetAndReturnBand(bid);
-
             band.Member = JsonConvert.DeserializeObject<Member>(GoogleRest(null, Method.GET, bid + "/Member/" + id));
 
             if (band.Member.Status == "0")
@@ -143,45 +133,14 @@ namespace GreenLightSharp.Controllers
             {
                 band.Member.Status = "0";
             }
-
             band.Member = JsonConvert.DeserializeObject<Member>(UpdateMember(band.Member));
 
             return RedirectToAction("ShowPage", new { id = band.Member.Id, bid = band.Member.BandId });
-
-        }
-
-        public string GoogleRest(object obj, Method method, string resource = null)
-        {
-            //Generic API call for firebase db
-            var client = new RestClient();
-            client.BaseUrl = new Uri("");
-            var json = JsonConvert.SerializeObject(obj);
-            var request = new RestRequest(method);
-            request.AddParameter("application/json; charset=utf-8", json, ParameterType.RequestBody);
-            request.RequestFormat = DataFormat.Json;
-            request.Resource = string.Format("{0}.json", resource);
-            IRestResponse restResponse = client.Execute(request);
-
-            return restResponse.Content;
-        }
-        //doesn't work, TODO Figure this out
-        public string UpdateShow(Show band)
-        {
-            return GoogleRest(band, Method.PATCH, band.Id);
-        }
-
-        public string UpdateMember(Member member)
-        {
-            return GoogleRest(member, Method.PATCH, member.BandId + "/Member/" + member.Id);
-        }
-
-        public string CreateMember(Member member)
-        {
-            return GoogleRest(member, Method.POST, member.BandId + "/Member");
         }
 
         public bool IsReady(Show band)
         {
+            //Check to see if each member is ready
             foreach (Member mem in band.Members)
             {
                 if (mem.Status == "0" || band.Members.Count == 1)
@@ -195,14 +154,15 @@ namespace GreenLightSharp.Controllers
         public void Clear(string bid)
         {
             Display show = GetAndReturnBand(bid);
+            //Clear status for each member
             foreach (Member mem in show.Show.Members)
             {
                 mem.Status = "0";
                 UpdateMember(mem);
             }
-
+            //Clear show status
             show.Show.ShowStatus = "0";
-            UpdateShow(show.Show);
+            UpdateShowStatus(show.Show);
         }
 
         public Display GetAndReturnBand(string bandId)
@@ -214,15 +174,42 @@ namespace GreenLightSharp.Controllers
 
             //Gets the Members
             Dictionary<string, Member> members = JsonConvert.DeserializeObject<Dictionary<string, Member>>(GoogleRest(null, Method.GET, bandId + "/Member"));
-
                 //adds them if there are any
                 foreach (Member m in members.Values)
                 {
                     showtime.Show.Members.Add(m);
                 }
-
-
             return showtime;
+        }
+
+        public string UpdateShowStatus(Show band)
+        {
+            return GoogleRest(new Dictionary<string, string> { { "ShowStatus", band.ShowStatus } }, Method.PATCH, band.Id+"/");
+        }
+
+        public string UpdateMember(Member member)
+        {
+            return GoogleRest(member, Method.PATCH, member.BandId + "/Member/" + member.Id);
+        }
+
+        public string CreateMember(Member member)
+        {
+            return GoogleRest(member, Method.POST, member.BandId + "/Member");
+        }
+
+        public string GoogleRest(object obj, Method method, string resource = null)
+        {
+            //Generic API call for firebase db
+            var client = new RestClient();
+            client.BaseUrl = new Uri("https://greenlight-f0594.firebaseio.com/");
+            var json = JsonConvert.SerializeObject(obj);
+            var request = new RestRequest(method);
+            request.AddParameter("application/json; charset=utf-8", json, ParameterType.RequestBody);
+            request.RequestFormat = DataFormat.Json;
+            request.Resource = string.Format("{0}.json", resource);
+            IRestResponse restResponse = client.Execute(request);
+
+            return restResponse.Content;
         }
     }
 }
