@@ -1,28 +1,33 @@
 ﻿@model GreenLightSharp.Models.Display
 
 @{
-    ViewBag.Title = "ShowPage";
-    string modelJSON = Model.Member.Id;
+    ViewBag.Title = "Show Page";
 }
 
 @functions{
-    public static string statusColor(string status) { return status == "0" ? "/Content/red32.png" : "/Content/green32.png"; }
+    public static string statusColor(string status) { return status == "0" ? "/Content/XRed.png" : "/Content/OGreen.png"; }
 }
 
-<h2>ShowPage</h2>
-<h4>Display</h4>
+<h2>Status Page</h2>
+<h4><span class="glyphicon glyphicon-trash deleteShow" id="@Model.Show.Id" style="display:none"> </span>@Model.Show.Band</h4>
+@if (Model.Show.ShowStatus == "1")
+{
+    <h1 id="success">Success!!</h1>
+}
 <hr />
+@if (Model.Member != null)
+{
+    <div class="col-md-4">
+        <b>@Model.Member.Name - @Model.Member.Instrument</b>
+        <div id="memStat"><img src=@statusColor(Model.Member.Status)></div>
+    </div>
+}
 <div class="col-md-4">
-    <b>@Model.Member.Name</b>
-    <div id="memStat"><img src=@statusColor(Model.Member.Status)></div>
-
-</div>
-<div class="col-md-4">
-    <ul>
+    <ul id="members">
         @foreach (var member in Model.Show.Members)
         {
             <li>
-                <b>@member.Name</b> - <b><img src=@statusColor(member.Status) height="10" width="10" /></b>
+                <span class="glyphicon glyphicon-trash deleteMember" id="@member.Id" style="display:none"></span> <img src=@statusColor(member.Status) height="25" width="25" /> <b>@member.Name - @member.Instrument</b>
             </li>
         }
     </ul>
@@ -38,6 +43,8 @@
 @section Scripts {
 
     <script type="text/javascript">
+        $("#navbar").append("<li><a id='admin'>Admin</a></li>")
+
         var change = firebase.database().ref('@Model.Show.Id/');
         var Url = '/Home/ShowPage/@Model.Member.Id?bid=@Model.Show.Id';
         var showUrl = encodeURI(Url);
@@ -51,6 +58,7 @@
                 location.reload();}
             });
         });
+
         $("#memStat").click(function () {
             $.ajax({
                 type: "POST",
@@ -60,9 +68,14 @@
                 dataType: "html",
                 success: function () {
                     location.reload();
+                    $(this).removeClass("loading");
+                    $(this).removeAttr("disabled", true);
                 }
             });
+            $(this).addClass("loading");
+            $(this).attr("disabled", true);
         });
+
         $("#reset").click(function() {
             $.ajax({
                 type: "POST",
@@ -71,8 +84,40 @@
                 contentType: "application/json; charset=utf-8",
                 dataType: "html"
             });
-            $("#reset").attr("src", "/Content/red32.png");
+            $("#reset").attr("src", "/Content/XRed.png");
         });
+
+        $("#admin").click(function () {
+            $("span").toggle()
+        });
+
+        $(".deleteMember").click(function () {
+            var idToDelete = $(this).attr("id");
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("DeleteMember", "Home")',
+                data: "{ 'idAdmin': '@Model.Member.Id', 'bidIn': '@Model.Show.Id', 'idDelete': '"+idToDelete+"'}" ,
+                contentType: "application/json; charset=utf-8",
+                dataType: "html",
+                success: function () {
+                    location.reload();
+                }
+            });
+        })
+
+        $(".deleteShow").click(function () {
+            var idToDelete = $(this).attr("id");
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("DeleteShow", "Home")',
+                data: "{ 'idDelete': '"+idToDelete+"'}" ,
+                contentType: "application/json; charset=utf-8",
+                dataType: "html",
+                success: function () {
+                    window.location.href = "/";
+                }
+            });
+        })
     </script>
     
 }

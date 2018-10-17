@@ -38,12 +38,23 @@ namespace GreenLightSharp.Controllers
             model.ShowStatus = "0";
             if (ModelState.IsValid)
             {
-                //Create band with a given name
-                //bandid is returned from
-                Member mem = new Member { BandId = JsonConvert.DeserializeObject<Dictionary<string, string>>(GoogleRest(model, Method.POST)).Values.FirstOrDefault() };
+                Member mem = new Member();
+                if (model.Id != null)
+                {
+                    UpdateShow(model);
+                    mem.BandId = model.Id;
+                }
+                else
+                {
+                    //Create band with a given name
+                    //bandid is returned from
+                    GoogleRest(model.Id, Method.POST);
+                    mem.BandId = JsonConvert.DeserializeObject<Dictionary<string, string>>(GoogleRest(model, Method.POST)).Values.FirstOrDefault();
+                    //updates the band with its firebase id
+                }
 
-                //updates the band with its firebase id
                 model.Id = mem.BandId;
+
                 GoogleRest(model, Method.PATCH, mem.BandId );
 
                 //Go to AddMember view with bandId showing
@@ -110,7 +121,7 @@ namespace GreenLightSharp.Controllers
             Display band = GetAndReturnBand(bid);            
             band.Member = JsonConvert.DeserializeObject<Member>(GoogleRest(null, Method.GET, bid + "/Member/" + id));
             //Want to make sure there are at least the number of members you wanted ready before success
-            if (IsReady(band.Show) && band.Show.Size >= band.Show.Members.Count)
+            if (IsReady(band.Show) && (band.Show.Members.Count >= band.Show.Size))
             {
                 band.Show.ShowStatus = "1";
                 UpdateShowStatus(band.Show);
@@ -136,6 +147,24 @@ namespace GreenLightSharp.Controllers
             band.Member = JsonConvert.DeserializeObject<Member>(UpdateMember(band.Member));
 
             return RedirectToAction("ShowPage", new { id = band.Member.Id, bid = band.Member.BandId });
+        }
+
+        [HttpPost]
+        public ActionResult DeleteMember(string idAdmin, string bidIn, string idDelete )
+        {
+            Member memberToDelete =JsonConvert.DeserializeObject<Member>(GoogleRest(null, Method.GET, bidIn + "/Member/" + idDelete));
+            DeleteMember(memberToDelete);
+
+            return RedirectToAction("ShowPage", new { id = idAdmin, bid = bidIn });
+        }
+
+        [HttpPost]
+        public ActionResult DeleteShow(string idDelete)
+        {
+            Show showToDelete = JsonConvert.DeserializeObject<Show>(GoogleRest(null, Method.GET, idDelete));
+            DeleteShow(showToDelete);
+
+            return RedirectToAction("Index");
         }
 
         public bool IsReady(Show band)
@@ -171,20 +200,34 @@ namespace GreenLightSharp.Controllers
                 //Gets the band
                 Show = JsonConvert.DeserializeObject<Show>(GoogleRest(null, Method.GET, bandId))
             };
+            //In case no members are in the band yet
+            try
+            {
+                //Gets members
+                Dictionary<string, Member> members = JsonConvert.DeserializeObject<Dictionary<string, Member>>(GoogleRest(null, Method.GET, bandId + "/Member"));
 
-            //Gets the Members
-            Dictionary<string, Member> members = JsonConvert.DeserializeObject<Dictionary<string, Member>>(GoogleRest(null, Method.GET, bandId + "/Member"));
                 //adds them if there are any
                 foreach (Member m in members.Values)
                 {
                     showtime.Show.Members.Add(m);
                 }
-            return showtime;
+                return showtime;
+            }
+            catch (Exception)
+            {
+                //If there are no members, that's cool
+                return showtime;
+            }  
         }
 
         public string UpdateShowStatus(Show band)
         {
             return GoogleRest(new Dictionary<string, string> { { "ShowStatus", band.ShowStatus } }, Method.PATCH, band.Id+"/");
+        }
+
+        public string UpdateShow(Show band)
+        {
+            return GoogleRest(band, Method.PATCH, band.Id);
         }
 
         public string UpdateMember(Member member)
@@ -195,6 +238,16 @@ namespace GreenLightSharp.Controllers
         public string CreateMember(Member member)
         {
             return GoogleRest(member, Method.POST, member.BandId + "/Member");
+        }
+
+        public void DeleteMember(Member member)
+        {
+            GoogleRest(member, Method.DELETE, member.BandId + "/Member/" + member.Id);
+        }
+
+        public void DeleteShow(Show show)
+        {
+            GoogleRest(show, Method.DELETE, show.Id);
         }
 
         public string GoogleRest(object obj, Method method, string resource = null)

@@ -158,7 +158,9 @@
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\green32.png" />
+    <Content Include="Content\OGreen.png" />
     <Content Include="Content\red32.png" />
+    <Content Include="Content\XRed.png" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />

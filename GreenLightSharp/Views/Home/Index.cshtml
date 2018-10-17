@@ -2,11 +2,6 @@
     ViewBag.Title = "Green Light";
 }
 
-<div class="jumbotron">
-    <h1>Green Light</h1>
-    <p class="lead">Use this to make sure you are ready</p>
-</div>
-
 <div class="row">
     <div class="col-md-4">
         @Html.Partial("_AddBand")
@@ -16,3 +11,17 @@
     </div>
 </div>
 <div class="col-lg-10"><b style="color: firebrick">@ViewBag.Message</b></div>
+
+@section Scripts {
+        <script type="text/javascript">
+            $("#join").click(function(){
+                $("#bandid").toggle();
+                $("#create").toggle();
+            })
+            $("#create").click(function () {
+                $("#join").toggle();
+                $("#newshow").toggle();
+            })
+        </script>
+
+    }

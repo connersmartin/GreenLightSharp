@@ -3,16 +3,20 @@
 @using (Html.BeginForm("AddBand", "Home", FormMethod.Post))
 {
     @Html.AntiForgeryToken()
-    <H4>If you are creating the show start here</H4>
+    <H4 class="btn btn-primary" id="create">Create a Show</H4>
     @Html.ValidationSummary(false, "", new { @class = "text-danger" })
-    <div class="form-horizontal">
-        <h4>Create A Show</h4>
+    <div class="form-horizontal" id="newshow">
+        <h5>Band Name</h5>
         @Html.TextBoxFor(model => model.Band)
         @Html.ValidationMessageFor(model => model.Band, "", new { @class = "text-danger" })
         <br />
         <h5>Number of members</h5>
         @Html.TextBoxFor(model => model.Size)
         @Html.ValidationMessageFor(model => model.Size, "", new { @class = "text-danger" })
+        <br />
+        <h5>Custom BandId</h5>
+        @Html.TextBoxFor(model => model.Id)
+        @Html.ValidationMessageFor(model => model.Id, "", new { @class = "text-danger" })
         <div class="form-group">
             <div class="col-md-10">
                 <input type="submit" value="Create" class="btn btn-default" />
