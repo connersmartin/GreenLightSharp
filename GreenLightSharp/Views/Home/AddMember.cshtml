@@ -1,32 +1,27 @@
 ﻿@model GreenLightSharp.Models.Member
 
 @{
-    ViewBag.Title = "AddMember";
+    ViewBag.Title = "Add Member";
 }
-
-<h2>Add Member</h2>
-
-
 @using (Html.BeginForm("PostMember","Home", FormMethod.Post, new { Member = Model }))
 {
     @Html.AntiForgeryToken()
     
     <div class="form-horizontal">
-        <h4>Member</h4>
         <hr />
         <h5>Copy this band id and share it with your band so they can join!</h5>
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         <div class="form-group">
             @Html.LabelFor(model => model.BandId, htmlAttributes: new { @class = "control-label col-md-2" })
             @Html.HiddenFor(model => model.BandId)
-            <div class="col-md-10">
+            <div class="col-md-2">
                 @Html.DisplayFor(model => model.BandId, new { htmlAttributes = new { @class = "form-control" } })
             </div>
         </div>
 
         <div class="form-group">
             @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
+            <div class="col-md-2">
                 @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
                 @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
             </div>
@@ -34,7 +29,7 @@
 
         <div class="form-group">
             @Html.LabelFor(model => model.Instrument, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
+            <div class="col-md-2">
                 @Html.EditorFor(model => model.Instrument, new { htmlAttributes = new { @class = "form-control" } })
                 @Html.ValidationMessageFor(model => model.Instrument, "", new { @class = "text-danger" })
             </div>
@@ -50,7 +45,7 @@
 }
 
 <div>
-    @Html.ActionLink("Back to List", "Index")
+    @Html.ActionLink("Start Over", "Index")
 </div>
 
 @section Scripts {

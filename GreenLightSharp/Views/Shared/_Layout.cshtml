@@ -1,4 +1,8 @@
 ﻿@using System.Configuration
+
+@{
+    string GreenLightTitle = "Green Light - " + ViewBag.Title;
+}
 <!DOCTYPE html>
 <html>
 <head>
@@ -38,7 +42,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                @Html.ActionLink("Green Light", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+                @Html.ActionLink(GreenLightTitle, "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav" id="navbar">
@@ -50,8 +54,8 @@
     </div>
     <div class="container body-content">
         @RenderBody()
-        <hr />
-        <footer style="clear: both">
+        <footer style="position: absolute; bottom: 0">
+            <hr />
             <p>&copy; @DateTime.Now.Year - GreenLight Web</p>
         </footer>
     </div>
