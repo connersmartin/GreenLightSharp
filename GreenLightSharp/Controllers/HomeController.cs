@@ -90,6 +90,8 @@ namespace GreenLightSharp.Controllers
         [HttpPost]
         public ActionResult PostMember(Member model)
         {
+            Session.Clear();
+
             //Add Member
             //Will need to know bandId for proper linkage can this be saved with a token?
             //may need to implement a secondary table if these are 'universal/session' members, but that's definitely secondary
@@ -102,9 +104,14 @@ namespace GreenLightSharp.Controllers
                 BandId = model.BandId
             };
 
+
             //API call to add a new member and give them an id
 
             bandMember.Id = JsonConvert.DeserializeObject<Dictionary<string, string>>(CreateMember(bandMember)).FirstOrDefault().Value;
+
+            Session["bid"] = bandMember.BandId.ToString();
+            Session["id"] = bandMember.Id.ToString();
+
             //update to give bandmember own id
             UpdateMember(bandMember);
 

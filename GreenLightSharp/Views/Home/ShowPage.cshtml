@@ -48,7 +48,7 @@
 
     <script type="text/javascript">
         $("#navbar").append("<li><a id='admin'>Admin</a></li>")
-
+        $("#returntoshow").remove()
         var change = firebase.database().ref('@Model.Show.Id/');
         var Url = '/Home/ShowPage/@Model.Member.Id?bid=@Model.Show.Id';
         var showUrl = encodeURI(Url);

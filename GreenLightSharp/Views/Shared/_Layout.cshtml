@@ -48,6 +48,10 @@
                 <ul class="nav navbar-nav" id="navbar">
                     <li>@Html.ActionLink("Home", "Index", "Home")</li>
                     <li>@Html.ActionLink("Help", "Help", "Home")</li>
+                    @if (Session["bid"] != null)
+                    {
+                        <li id="returntoshow">@Html.ActionLink("return to show","ShowPage",new { id = Session["id"], bid = Session["bid"] }, null)</li>
+                    }
                 </ul>
             </div>
         </div>
