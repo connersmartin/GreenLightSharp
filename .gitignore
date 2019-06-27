@@ -260,3 +260,5 @@ paket-files/
 __pycache__/
 *.pyc
 /GreenLightSharp/Properties/PublishProfiles/greenlightapp - Web Deploy.pubxml
+/GreenLightSharp/Properties/PublishProfiles/greenlight - FTP.pubxml
+/GreenLightSharp/Properties/PublishProfiles/greenlight - Web Deploy.pubxml

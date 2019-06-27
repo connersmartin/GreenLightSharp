@@ -162,6 +162,10 @@ namespace GreenLightSharp.Controllers
             Member memberToDelete =JsonConvert.DeserializeObject<Member>(GoogleRest(null, Method.GET, bidIn + "/Member/" + idDelete));
             DeleteMember(memberToDelete);
 
+            var show = GetAndReturnBand(bidIn);
+            show.Show.Size = show.Show.Members.Count();
+            UpdateShowCount(show.Show);
+
             return RedirectToAction("ShowPage", new { id = idAdmin, bid = bidIn });
         }
 
@@ -230,6 +234,10 @@ namespace GreenLightSharp.Controllers
         public string UpdateShowStatus(Show band)
         {
             return GoogleRest(new Dictionary<string, string> { { "ShowStatus", band.ShowStatus } }, Method.PATCH, band.Id+"/");
+        }
+        public string UpdateShowCount(Show band)
+        {
+            return GoogleRest(new Dictionary<string, string> { { "Size", band.Size.ToString() } }, Method.PATCH, band.Id + "/");
         }
 
         public string UpdateShow(Show band)

@@ -100,13 +100,14 @@
             $.ajax({
                 type: "POST",
                 url: '@Url.Action("DeleteMember", "Home")',
-                data: "{ 'idAdmin': '@Model.Member.Id', 'bidIn': '@Model.Show.Id', 'idDelete': '"+idToDelete+"'}" ,
+                data: "{ 'idAdmin': '@Model.Member.Id', 'bidIn': '@Model.Show.Id', 'idDelete': '" + idToDelete + "'}",
                 contentType: "application/json; charset=utf-8",
                 dataType: "html",
                 success: function () {
                     location.reload();
                 }
             });
+            
         })
 
         $(".deleteShow").click(function () {
